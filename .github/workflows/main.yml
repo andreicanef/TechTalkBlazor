@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Depl;oy to Github pages
+name: Deploy to Github pages
 
 # Controls when the action will run. 
 on:
@@ -19,7 +19,7 @@ jobs:
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5
+        dotnet-version: 5.0.201
         # publishes Blazor project to the release-folder
     - name: Publish .NET Core Project
       run: dotnet publish TechTalkBlazor.csproj -c Release -o release --nologo
