@@ -1,0 +1,52 @@
+﻿@page "/geolocation"
+@using BrowserInterop.Extensions;
+@using BrowserInterop.Geolocation
+@inject IJSRuntime jsRuntime
+
+<h3>GeolocationExample</h3>
+
+<button type="button" @onclick="GetGeolocation">Get Current Position</button>
+
+@if (currentPosition != null && currentPosition.Location != null){
+<div>
+    Current position :
+    <ul>
+        <li>Latitude : @currentPosition.Location.Coords.Latitude</li>
+        <li>Longitude : @currentPosition.Location.Coords.Longitude </li>
+        <li>Altitude : @currentPosition.Location.Coords.Altitude </li>
+        <li>Accuracy : @currentPosition.Location.Coords.Accuracy </li>
+        <li>Altitude Accuracy : @currentPosition.Location.Coords.AltitudeAccuracy </li>
+        <li>Heading : @currentPosition.Location.Coords.Heading </li>
+        <li>Speed : @currentPosition.Location.Coords.Speed </li>
+    </ul>
+</div>
+}
+            else
+            {
+                <div>please click 'allow' on the browser popup, to enable this feature. </div>
+            }
+
+@code {
+
+    private WindowNavigatorGeolocation geolocationWrapper;
+    private GeolocationResult currentPosition;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var window = await jsRuntime.Window();
+        var navigator = await window.Navigator();
+        geolocationWrapper = navigator.Geolocation;
+        await window.Console.Log("this is a {0}", "Log message");
+
+    }
+
+    public async Task GetGeolocation()
+    {
+        currentPosition = (await geolocationWrapper.GetCurrentPosition(new PositionOptions()
+        {
+            EnableHighAccuracy = true,
+            MaximumAgeTimeSpan = TimeSpan.FromHours(1),
+            TimeoutTimeSpan = TimeSpan.FromMinutes(1)
+        }));
+    }
+}
