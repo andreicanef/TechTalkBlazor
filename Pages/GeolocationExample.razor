@@ -2,6 +2,7 @@
 @using BrowserInterop.Extensions;
 @using BrowserInterop.Geolocation
 @inject IJSRuntime jsRuntime
+@inject HttpClient httpClient
 
 <h3>GeolocationExample</h3>
 
@@ -30,6 +31,7 @@
 
     private WindowNavigatorGeolocation geolocationWrapper;
     private GeolocationResult currentPosition;
+    private WeatherForecast weatherForecast;
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,5 +50,41 @@
             MaximumAgeTimeSpan = TimeSpan.FromHours(1),
             TimeoutTimeSpan = TimeSpan.FromMinutes(1)
         }));
+
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri($"https://weatherbit-v1-mashape.p.rapidapi.com/current?lon={currentPosition.Location.Coords.Longitude}&lat={currentPosition.Location.Coords.Latitude}"),
+            Headers =
+            {
+                { "x-rapidapi-key", "3a7a96bbb5msh867ecb6e7ce748ap15d4dajsn02d579113e64" },
+                { "x-rapidapi-host", "weatherbit-v1-mashape.p.rapidapi.com" }
+            }
+        };
+
+        using (var response = await httpClient.SendAsync(request))
+        {
+            response.EnsureSuccessStatusCode();
+            var body = await response.Content.ReadAsStringAsync();
+            var window = await jsRuntime.Window();
+            Console.Write(body);
+        }
+
+    }
+
+    public class WeatherForecast
+    {
+        public string CityName { get; set; }
+        public WeatherInfo WeatherInformation { get; set; }
+        public DateTime DateRecorded { get; set; }
+        public string Sunrise { get; set; }
+
+    }
+
+    public class WeatherInfo
+    {
+        public string Description { get; set; }
+        public string Icon { get; set; }
+        public string Code { get; set; }
     }
 }
