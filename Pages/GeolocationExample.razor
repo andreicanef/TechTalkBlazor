@@ -1,45 +1,59 @@
 ﻿@page "/geolocation"
 @using BrowserInterop.Extensions;
-@using BrowserInterop.Geolocation
+@using BrowserInterop.Geolocation;
 @inject IJSRuntime jsRuntime
 @inject HttpClient httpClient
 
-<h3>GeolocationExample</h3>
+<h1>GeolocationExample</h1>
+
+
+
+@if (currentPosition != null && currentPosition.Location != null)
+{
+    <div>
+        Current position :
+        <ul>
+            <li>Latitude : @currentPosition.Location.Coords.Latitude</li>
+            <li>Longitude : @currentPosition.Location.Coords.Longitude </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div>please click the button, and then 'allow' on the browser popup, to enable this feature. </div>
+}
 
 <button type="button" @onclick="GetGeolocation">Get Current Position</button>
 
-@if (currentPosition != null && currentPosition.Location != null){
-<div>
-    Current position :
-    <ul>
-        <li>Latitude : @currentPosition.Location.Coords.Latitude</li>
-        <li>Longitude : @currentPosition.Location.Coords.Longitude </li>
-        <li>Altitude : @currentPosition.Location.Coords.Altitude </li>
-        <li>Accuracy : @currentPosition.Location.Coords.Accuracy </li>
-        <li>Altitude Accuracy : @currentPosition.Location.Coords.AltitudeAccuracy </li>
-        <li>Heading : @currentPosition.Location.Coords.Heading </li>
-        <li>Speed : @currentPosition.Location.Coords.Speed </li>
-    </ul>
+
+@if (userForecast != null)
+{
+<div class="card">
+
+    <h2>@userForecast.City</h2>
+    <h3>@userForecast.WeatherInformation.Description</h3>
+    <h3>@userForecast.TemperatureC°</h3>
+    <img src="@userForecast.WeatherInformation.Icon" />
 </div>
 }
-            else
-            {
-                <div>please click 'allow' on the browser popup, to enable this feature. </div>
-            }
+else
+{
+    <p>no weather data retrieved. please press the button.</p>
+}
 
 @code {
 
     private WindowNavigatorGeolocation geolocationWrapper;
     private GeolocationResult currentPosition;
-    private WeatherForecast weatherForecast;
+    private WeatherForecast[] forecasts;
+    private WeatherForecast userForecast;
 
     protected override async Task OnInitializedAsync()
     {
         var window = await jsRuntime.Window();
         var navigator = await window.Navigator();
         geolocationWrapper = navigator.Geolocation;
-        await window.Console.Log("this is a {0}", "Log message");
-
+        forecasts = await httpClient.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
     }
 
     public async Task GetGeolocation()
@@ -51,40 +65,30 @@
             TimeoutTimeSpan = TimeSpan.FromMinutes(1)
         }));
 
-        var request = new HttpRequestMessage
+        if (forecasts.Any())
         {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri($"https://weatherbit-v1-mashape.p.rapidapi.com/current?lon={currentPosition.Location.Coords.Longitude}&lat={currentPosition.Location.Coords.Latitude}"),
-            Headers =
-            {
-                { "x-rapidapi-key", "3a7a96bbb5msh867ecb6e7ce748ap15d4dajsn02d579113e64" },
-                { "x-rapidapi-host", "weatherbit-v1-mashape.p.rapidapi.com" }
-            }
-        };
-
-        using (var response = await httpClient.SendAsync(request))
-        {
-            response.EnsureSuccessStatusCode();
-            var body = await response.Content.ReadAsStringAsync();
-            var window = await jsRuntime.Window();
-            Console.Write(body);
+            userForecast = forecasts.OrderBy(x => Guid.NewGuid()).First();
         }
 
     }
 
     public class WeatherForecast
     {
-        public string CityName { get; set; }
+        public string City { get; set; }
+
+        public DateTime Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
         public WeatherInfo WeatherInformation { get; set; }
-        public DateTime DateRecorded { get; set; }
-        public string Sunrise { get; set; }
+
 
     }
 
+
     public class WeatherInfo
     {
-        public string Description { get; set; }
         public string Icon { get; set; }
-        public string Code { get; set; }
+        public string Description { get; set; }
     }
 }
