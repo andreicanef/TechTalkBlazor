@@ -1,27 +1,47 @@
 [
-  {
-    "date": "2018-05-06",
-    "temperatureC": 1,
-    "summary": "Freezing"
-  },
-  {
-    "date": "2018-05-07",
-    "temperatureC": 14,
-    "summary": "Bracing"
-  },
-  {
-    "date": "2018-05-08",
-    "temperatureC": -13,
-    "summary": "Freezing"
-  },
-  {
-    "date": "2018-05-09",
-    "temperatureC": -16,
-    "summary": "Balmy"
-  },
-  {
-    "date": "2018-05-10",
-    "temperatureC": -2,
-    "summary": "Chilly"
-  }
+    {
+        "city":  "Constanta",
+        "date": "2021-04-09",
+        "temperatureC": 1,
+        "weatherInformation": {
+            "icon": "https://www.weatherbit.io/static/img/icons/s03d.png",
+            "description": "Snow"
+        }
+    },
+    {
+        "city": "Bucuresti",
+        "date": "2021-04-09",
+        "temperatureC": 14,
+        "weatherInformation": {
+            "icon": "https://www.weatherbit.io/static/img/icons/r03n.png",
+            "description": "Heavy Rain"
+        }
+    },
+    {
+        "city": "Brasov",
+        "date": "2021-04-09",
+        "temperatureC": -13,
+        "weatherInformation": {
+            "icon": "https://www.weatherbit.io/static/img/icons/c01n.png",
+            "description": "Freezing temperatures"
+        }
+    },
+    {
+        "city": "Constanta",
+        "date": "2021-04-09",
+        "temperatureC": 23,
+        "weatherInformation": {
+            "icon": "https://www.weatherbit.io/static/img/icons/c01n.png",
+            "description": "Clear sky"
+        }
+    },
+    {
+        "city": "Bucuresti",
+        "date": "2021-04-09",
+        "temperatureC": 9,
+        "weatherInformation": {
+            "icon": "https://www.weatherbit.io/static/img/icons/t01d.png",
+            "description": "Thunderstorms"
+        }
+    }
 ]
